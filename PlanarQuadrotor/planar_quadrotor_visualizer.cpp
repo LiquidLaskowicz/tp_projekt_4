@@ -13,26 +13,32 @@ void PlanarQuadrotorVisualizer::render(std::shared_ptr<SDL_Renderer> &gRenderer)
     Eigen::VectorXf state = quadrotor_ptr->GetState();
     float q_x, q_y, q_theta;
 
-    /* x, y, theta coordinates */
-    q_x = state[0] + 640; // <---* D
-    q_y = state[1] + 360; // <---* D
+    
+    q_x = (state[0]*1000 + 640); 
+    q_y = (state[1]*1000 + 360); 
     q_theta = state[2];
 
-    SDL_SetRenderDrawColor(gRenderer.get(), 0xFF, 0xC8, 0x00, 0xFF);
+    int szerok = 100;
+    int wysok = 50;
 
-    // <---* D
     SDL_Rect bodyRect;
-    bodyRect.x = q_x - 50; 
-    bodyRect.y = q_y - 5;  
-    bodyRect.w = 100;      
+    bodyRect.x = q_x - 50;
+    bodyRect.y = q_y - 5;
+    bodyRect.w = 100;
     bodyRect.h = 10;
-    // <---* D
-    // <---* D
-    SDL_RenderFillRect(gRenderer.get(), &bodyRect);
-    SDL_SetRenderDrawColor(gRenderer.get(), 0x00, 0x00, 0x00, 0xFF);
-    SDL_RenderDrawLine(gRenderer.get(), q_x + 38, q_y -15, q_x + 52, q_y - 15);
-    SDL_RenderDrawLine(gRenderer.get(), q_x + 45, q_y - 15, q_x + 45, q_y - 5);
-    SDL_RenderDrawLine(gRenderer.get(), q_x - 38, q_y - 15, q_x - 52, q_y - 15);
-    SDL_RenderDrawLine(gRenderer.get(), q_x - 45, q_y - 15, q_x - 45, q_y - 5);
-    // <---* D
+
+    SDL_Texture* quadTexture = SDL_CreateTexture(gRenderer.get(), SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, szerok, wysok);
+
+    SDL_Point rotationCenter = { static_cast<int>(q_x), static_cast<int>(q_y) };
+    
+    SDL_SetRenderTarget(gRenderer.get(), quadTexture);
+    
+    SDL_SetRenderDrawColor(gRenderer.get(), 255, 165, 0, 255);
+
+    SDL_RenderClear(gRenderer.get());
+    
+    SDL_SetRenderTarget(gRenderer.get(), nullptr);
+
+    SDL_RenderCopyEx(gRenderer.get(), quadTexture, nullptr, &bodyRect, q_theta * 10, &rotationCenter, SDL_FLIP_NONE);
+
 }

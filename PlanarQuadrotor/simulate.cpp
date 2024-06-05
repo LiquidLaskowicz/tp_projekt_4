@@ -56,7 +56,7 @@ int main(int argc, char* args[])
     goal_state << 0, 0, 0, 0, 0, 0;
     quadrotor.SetGoal(goal_state);
     /* Timestep for the simulation */
-    const float dt = 0.001;
+    const float dt = 0.0002;
     Eigen::MatrixXf K = LQR(quadrotor, dt);
     Eigen::Vector2f input = Eigen::Vector2f::Zero(2);
 
@@ -75,6 +75,9 @@ int main(int argc, char* args[])
         bool quit = false;
         float delay;
         int x, y;
+        int x_point, y_point;
+        bool reach = false;
+
         Eigen::VectorXf state = Eigen::VectorXf::Zero(6);
 
         while (!quit)
@@ -86,6 +89,20 @@ int main(int argc, char* args[])
                 {
                     quit = true;
                 }
+                if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT)
+                {
+                    SDL_GetMouseState(&x, &y);
+
+                    goal_state << (x-640)/1000.0, (y-360)/1000.0, 0, 0, 0, 0;
+                    
+                    quadrotor.SetGoal(goal_state);
+                    
+                    x_point = (x - 640) / 1000.0;
+                    y_point = (y - 360) / 1000.0;
+                    reach = true;
+
+                }
+
                 else if (e.type == SDL_MOUSEMOTION)
                 {
                     SDL_GetMouseState(&x, &y);
@@ -93,6 +110,8 @@ int main(int argc, char* args[])
                 }
                 
             }
+
+            
 
             SDL_Delay((int) dt * 1000);
 
