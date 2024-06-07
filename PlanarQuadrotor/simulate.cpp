@@ -2,6 +2,7 @@
  * SDL window creation adapted from https://github.com/isJuhn/DoublePendulum
 */
 #include "simulate.h"
+#include "planar_quadrotor_visualizer.h"
 
 Eigen::MatrixXf LQR(PlanarQuadrotor &quadrotor, float dt) {
     /* Calculate LQR gain matrix */
@@ -75,8 +76,6 @@ int main(int argc, char* args[])
         bool quit = false;
         float delay;
         int x, y;
-        int x_point, y_point;
-        bool reach = false;
 
         Eigen::VectorXf state = Eigen::VectorXf::Zero(6);
 
@@ -96,10 +95,10 @@ int main(int argc, char* args[])
                     goal_state << (x-640)/1000.0, (y-360)/1000.0, 0, 0, 0, 0;
                     
                     quadrotor.SetGoal(goal_state);
-                    
-                    x_point = (x - 640) / 1000.0;
-                    y_point = (y - 360) / 1000.0;
-                    reach = true;
+
+                    quadrotor_visualizer.setMovement(true);
+                    quadrotor_visualizer.setGoalX(x);
+                    quadrotor_visualizer.setGoalY(y);
 
                 }
 
