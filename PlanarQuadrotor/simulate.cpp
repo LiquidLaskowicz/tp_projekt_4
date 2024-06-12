@@ -3,6 +3,9 @@
 */
 #include "simulate.h"
 #include "planar_quadrotor_visualizer.h"
+#include <matplot/matplot.h>
+
+namespace mp = matplot;
 
 Eigen::MatrixXf LQR(PlanarQuadrotor &quadrotor, float dt) {
     /* Calculate LQR gain matrix */
@@ -30,6 +33,35 @@ Eigen::MatrixXf LQR(PlanarQuadrotor &quadrotor, float dt) {
 void control(PlanarQuadrotor &quadrotor, const Eigen::MatrixXf &K) {
     Eigen::Vector2f input = quadrotor.GravityCompInput();
     quadrotor.SetInput(input - K * quadrotor.GetControlState());
+}
+
+void rys(const std::vector<float>& x, const std::vector<float>& y1, const std::vector<float>& y2, const std::vector<float>& y3)
+{
+    // Wykres 1
+    mp::subplot(4, 1, 1);
+    mp::plot(x, y1, "-r");
+    mp::title("Wykres funkcji x");
+    mp::xlabel("x");
+    mp::ylabel("x");
+    mp::grid(true);
+
+    // Wykres 2
+    mp::subplot(4, 1, 2);
+    mp::plot(x, y2, "-g");
+    mp::title("Wykres funkcji y");
+    mp::xlabel("x");
+    mp::ylabel("y");
+    mp::grid(true);
+
+    // Wykres 3
+    mp::subplot(4, 1, 3);
+    mp::plot(x, y3, "-b");
+    mp::title("Wykres funkcji theta");
+    mp::xlabel("x");
+    mp::ylabel("theta");
+    mp::grid(true);
+
+    mp::show();
 }
 
 int main(int argc, char* args[])
@@ -69,6 +101,7 @@ int main(int argc, char* args[])
     std::vector<float> x_history;
     std::vector<float> y_history;
     std::vector<float> theta_history;
+    std::vector<float> time0;
 
     if (init(gWindow, gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT) >= 0)
     {
@@ -76,11 +109,23 @@ int main(int argc, char* args[])
         bool quit = false;
         float delay;
         int x, y;
+        int sec = 0;
 
         Eigen::VectorXf state = Eigen::VectorXf::Zero(6);
 
         while (!quit)
         {
+            if (quadrotor_visualizer.frame == 100)
+            {
+                time0.push_back(sec);
+                x_history.push_back(quadrotor_visualizer.get_xc());
+                y_history.push_back(quadrotor_visualizer.get_yc());
+                theta_history.push_back(quadrotor_visualizer.get_ac());
+
+                ++sec;
+
+            }
+
             //events
             while (SDL_PollEvent(&e) != 0)
             {
@@ -97,11 +142,14 @@ int main(int argc, char* args[])
                     quadrotor.SetGoal(goal_state);
 
                     quadrotor_visualizer.setMovement(true);
-                    quadrotor_visualizer.setGoalX(x);
-                    quadrotor_visualizer.setGoalY(y);
+                    quadrotor_visualizer.set_x(x);
+                    quadrotor_visualizer.set_y(y);
 
                 }
-
+                if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_p)
+                {
+                    rys(time0, x_history, y_history, theta_history);
+                }
                 else if (e.type == SDL_MOUSEMOTION)
                 {
                     SDL_GetMouseState(&x, &y);
@@ -109,8 +157,6 @@ int main(int argc, char* args[])
                 }
                 
             }
-
-            
 
             SDL_Delay((int) dt * 1000);
 

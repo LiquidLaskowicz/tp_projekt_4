@@ -98,14 +98,17 @@ void PlanarQuadrotorVisualizer::render(std::shared_ptr<SDL_Renderer> &gRenderer)
     
     if (getMovement())
     {
-        filledCircleColor(gRenderer.get(), getGoalX(), getGoalY(), 5, 0xFF0000FF);
+        filledCircleColor(gRenderer.get(), get_x(), get_y(), 5, 0xFF0000FF);
     }
 
-    if (q_x >= (getGoalX() - 5) && q_x <= (getGoalX() + 5) && q_y >= (getGoalY() - 5) && q_y <= (getGoalY() + 5)) setMovement(false);
+    if (q_x >= (get_x() - 5) && q_x <= (get_x() + 5) && q_y >= (get_y() - 5) && q_y <= (get_y() + 5)) setMovement(false);
 
     if (frame % 100 == 0) frame_0 += 1;
 
     if (frame == 200) frame = 0;
     if (frame_0 == 200) frame_0 = 0;
 
+    set_xc(q_x);
+    set_yc(q_y);
+    set_ac(q_theta);
 }
