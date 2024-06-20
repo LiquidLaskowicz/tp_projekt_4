@@ -10,6 +10,7 @@ PlanarQuadrotorVisualizer::PlanarQuadrotorVisualizer(PlanarQuadrotor *quadrotor_
  * 3. Animate proppelers (extra points)
  */
 
+ //<--
 int move_side(int f, int f0)
 {
     int z = 0;
@@ -19,12 +20,13 @@ int move_side(int f, int f0)
 
     return z;
 }
+//<--
 
 void PlanarQuadrotorVisualizer::render(std::shared_ptr<SDL_Renderer> &gRenderer) {
     Eigen::VectorXf state = quadrotor_ptr->GetState();
     float q_x, q_y, q_theta;
 
-    
+    //<--
     q_x = (state[0]*1000 + 640); 
     q_y = (state[1]*1000 + 360); 
     q_theta = state[2];
@@ -111,4 +113,6 @@ void PlanarQuadrotorVisualizer::render(std::shared_ptr<SDL_Renderer> &gRenderer)
     set_xc(q_x);
     set_yc(q_y);
     set_ac(q_theta);
+
+    //<--
 }

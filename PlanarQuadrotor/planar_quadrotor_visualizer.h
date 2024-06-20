@@ -11,6 +11,7 @@ class PlanarQuadrotorVisualizer {
 private:
     PlanarQuadrotor *quadrotor_ptr;
 
+    //<--
     bool movement = false;
     int goal_x = 0;
     int goal_y = 0;
@@ -18,9 +19,12 @@ private:
     float cur_x = 0;
     float cur_y = 0;
     float cur_ang = 0;
+    //<--
+
 public:
     PlanarQuadrotorVisualizer(PlanarQuadrotor *quadrotor_ptr);
 
+    //<--
     int frame = 0;
     int frame_0 = 0;
 
@@ -41,6 +45,7 @@ public:
 
     void set_ac(float a) { cur_ang = a; }
     float get_ac() const { return cur_ang; }
+    //<--
 
     void render(std::shared_ptr<SDL_Renderer> &gRenderer);
 };

@@ -4,6 +4,7 @@
 #include "simulate.h"
 #include "planar_quadrotor_visualizer.h"
 #include <matplot/matplot.h>
+#include <thread>
 
 namespace mp = matplot;
 
@@ -19,9 +20,11 @@ Eigen::MatrixXf LQR(PlanarQuadrotor &quadrotor, float dt) {
     Eigen::MatrixXf K = Eigen::MatrixXf::Zero(6, 6);
     Eigen::Vector2f input = quadrotor.GravityCompInput();
 
-    Q.diagonal() << 10, 10, 10, 1, 10, 0.25 / 2 / M_PI;
-    R.row(0) << 0.1, 0.05;
-    R.row(1) << 0.05, 0.1;
+    //<--
+    Q.diagonal() << 20, 20, 20, 2, 20, 0.5 / 2 / M_PI;
+    R.row(0) << 0.05, 0.025;
+    R.row(1) << 0.025, 0.05;
+    //<--
 
     std::tie(A, B) = quadrotor.Linearize();
     A_discrete = Eye + dt * A;
@@ -35,6 +38,7 @@ void control(PlanarQuadrotor &quadrotor, const Eigen::MatrixXf &K) {
     quadrotor.SetInput(input - K * quadrotor.GetControlState());
 }
 
+//<--
 void rys(const std::vector<float>& x, const std::vector<float>& y1, const std::vector<float>& y2, const std::vector<float>& y3)
 {
     // Wykres 1
@@ -63,6 +67,7 @@ void rys(const std::vector<float>& x, const std::vector<float>& y1, const std::v
 
     mp::show();
 }
+//<--
 
 int main(int argc, char* args[])
 {
@@ -89,7 +94,11 @@ int main(int argc, char* args[])
     goal_state << 0, 0, 0, 0, 0, 0;
     quadrotor.SetGoal(goal_state);
     /* Timestep for the simulation */
+
+    //<--
     const float dt = 0.0002;
+    //<--
+
     Eigen::MatrixXf K = LQR(quadrotor, dt);
     Eigen::Vector2f input = Eigen::Vector2f::Zero(2);
 
@@ -101,20 +110,28 @@ int main(int argc, char* args[])
     std::vector<float> x_history;
     std::vector<float> y_history;
     std::vector<float> theta_history;
+
+    //<--
     std::vector<float> time0;
+    //<--
 
     if (init(gWindow, gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT) >= 0)
     {
         SDL_Event e;
+
+        //<--
         bool quit = false;
         float delay;
         int x, y;
         int sec = 0;
+        //<--
 
         Eigen::VectorXf state = Eigen::VectorXf::Zero(6);
 
         while (!quit)
         {
+
+            //<--
             if (quadrotor_visualizer.frame == 100)
             {
                 time0.push_back(sec);
@@ -125,6 +142,7 @@ int main(int argc, char* args[])
                 ++sec;
 
             }
+            //<--
 
             //events
             while (SDL_PollEvent(&e) != 0)
@@ -133,6 +151,8 @@ int main(int argc, char* args[])
                 {
                     quit = true;
                 }
+
+                //<--
                 if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT)
                 {
                     SDL_GetMouseState(&x, &y);
@@ -146,10 +166,15 @@ int main(int argc, char* args[])
                     quadrotor_visualizer.set_y(y);
 
                 }
-                if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_p)
-                {
-                    rys(time0, x_history, y_history, theta_history);
+
+                if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_p) {
+
+                    std::thread t(rys, time0, x_history, y_history, theta_history);
+
+                    t.detach();
                 }
+                //<--
+
                 else if (e.type == SDL_MOUSEMOTION)
                 {
                     SDL_GetMouseState(&x, &y);
