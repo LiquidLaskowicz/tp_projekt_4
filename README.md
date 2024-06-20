@@ -3,6 +3,6 @@ Projekt 4 z technik programowania
 
 Opracowany przez:
 
-Damian Łaskowski
+Damian Łaskowski 197798
 
-Patryk Kruszyński 
+Patryk Kruszyński 198373
