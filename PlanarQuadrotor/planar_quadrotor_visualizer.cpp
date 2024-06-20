@@ -96,6 +96,8 @@ void PlanarQuadrotorVisualizer::render(std::shared_ptr<SDL_Renderer> &gRenderer)
 
     SDL_RenderCopyEx(gRenderer.get(), quadTexture, nullptr, &rightProp, q_theta * 8, &rotationCenter, SDL_FLIP_NONE);
 
+    SDL_DestroyTexture(quadTexture);
+
     ++frame;
     
     if (getMovement())
