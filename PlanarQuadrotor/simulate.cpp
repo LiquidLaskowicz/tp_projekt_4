@@ -46,7 +46,7 @@ void rys(const std::vector<float>& x, const std::vector<float>& y1, const std::v
     mp::subplot(4, 1, 1);
     mp::plot(x, y1, "-r");
     mp::title("Wykres funkcji x");
-    mp::xlabel("x");
+    mp::xlabel("t");
     mp::ylabel("x");
     mp::grid(true);
 
@@ -54,7 +54,7 @@ void rys(const std::vector<float>& x, const std::vector<float>& y1, const std::v
     mp::subplot(4, 1, 2);
     mp::plot(x, y2, "-g");
     mp::title("Wykres funkcji y");
-    mp::xlabel("x");
+    mp::xlabel("t");
     mp::ylabel("y");
     mp::grid(true);
 
@@ -62,7 +62,7 @@ void rys(const std::vector<float>& x, const std::vector<float>& y1, const std::v
     mp::subplot(4, 1, 3);
     mp::plot(x, y3, "-b");
     mp::title("Wykres funkcji theta");
-    mp::xlabel("x");
+    mp::xlabel("t");
     mp::ylabel("theta");
     mp::grid(true);
 
@@ -170,9 +170,9 @@ int main(int argc, char* args[])
 
                 if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_p) {
 
-                    std::thread t(rys, time0, x_history, y_history, theta_history);
+                    std::thread splot(rys, time0, x_history, y_history, theta_history);
 
-                    t.detach();
+                    splot.detach();
                 }
                 //<--
 
